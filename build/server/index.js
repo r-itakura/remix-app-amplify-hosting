@@ -1,7 +1,7 @@
 import { jsx, jsxs } from "react/jsx-runtime";
 import { PassThrough } from "node:stream";
-import { createReadableStreamFromReadable } from "@remix-run/node";
-import { RemixServer, Meta, Links, Outlet, Scripts } from "@remix-run/react";
+import { createReadableStreamFromReadable, json } from "@remix-run/node";
+import { RemixServer, Meta, Links, Outlet, Scripts, useLoaderData } from "@remix-run/react";
 import * as isbotModule from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 const ABORT_DELAY = 5e3;
@@ -133,7 +133,49 @@ const route0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProper
   __proto__: null,
   default: App
 }, Symbol.toStringTag, { value: "Module" }));
-const serverManifest = { "entry": { "module": "/assets/entry.client-DGxEBX6d.js", "imports": ["/assets/components-CTH6LohG.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-Ck7f94Mr.js", "imports": ["/assets/components-CTH6LohG.js"], "css": [] } }, "url": "/assets/manifest-5ab0d17e.js", "version": "5ab0d17e" };
+const meta = () => {
+  return [
+    { title: "New Remix App" },
+    { name: "description", content: "Welcome to Remix!" }
+  ];
+};
+async function loader() {
+  const response = await fetch(
+    "https://1kqrlqtygk.execute-api.us-east-1.amazonaws.com/dev/api/zunda-get-thread"
+  );
+  const data = await response.json();
+  return json({ posts: data });
+}
+function Home() {
+  const { posts: threads } = useLoaderData();
+  return /* @__PURE__ */ jsxs("div", { children: [
+    /* @__PURE__ */ jsx("h1", { children: "ずんだもんとのチャットページなのだ！" }),
+    /* @__PURE__ */ jsx("p", { children: "スレッド一覧" }),
+    /* @__PURE__ */ jsx("div", { children: threads["partition_key_values"].map(
+      (thread, index) => /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx(
+        "div",
+        {
+          style: {
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "5px",
+            cursor: "pointer"
+          },
+          onMouseEnter: (e) => e.currentTarget.style.backgroundColor = "#f0f0f0",
+          onMouseLeave: (e) => e.currentTarget.style.backgroundColor = "transparent",
+          children: thread
+        }
+      ) }, index)
+    ) })
+  ] });
+}
+const route1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: Home,
+  loader,
+  meta
+}, Symbol.toStringTag, { value: "Module" }));
+const serverManifest = { "entry": { "module": "/assets/entry.client-BJLtYtqa.js", "imports": ["/assets/components-DqvtoDpJ.js"], "css": [] }, "routes": { "root": { "id": "root", "parentId": void 0, "path": "", "index": void 0, "caseSensitive": void 0, "hasAction": false, "hasLoader": false, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/root-B8i3dwZC.js", "imports": ["/assets/components-DqvtoDpJ.js"], "css": [] }, "routes/_index": { "id": "routes/_index", "parentId": "root", "path": void 0, "index": true, "caseSensitive": void 0, "hasAction": false, "hasLoader": true, "hasClientAction": false, "hasClientLoader": false, "hasErrorBoundary": false, "module": "/assets/_index-CFWKtUTx.js", "imports": ["/assets/components-DqvtoDpJ.js"], "css": [] } }, "url": "/assets/manifest-f6795327.js", "version": "f6795327" };
 const mode = "production";
 const assetsBuildDirectory = "build/client";
 const basename = "/";
@@ -149,6 +191,14 @@ const routes = {
     index: void 0,
     caseSensitive: void 0,
     module: route0
+  },
+  "routes/_index": {
+    id: "routes/_index",
+    parentId: "root",
+    path: void 0,
+    index: true,
+    caseSensitive: void 0,
+    module: route1
   }
 };
 export {
