@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { useLoaderData, Link } from "@remix-run/react";
+import { redirect, json } from "@remix-run/node";
+import { Form, useActionData, useLoaderData, Link } from "@remix-run/react";
 
 export const meta: MetaFunction = () => {
     return [
@@ -54,6 +54,20 @@ export const meta: MetaFunction = () => {
             )
           )}
         </div>
+        <div>
+          <Form method="post">
+            <div>
+              <label htmlFor="body">新しい会話</label>
+              <input type="text" name="body" id="body" />
+            </div>
+            <button type="submit">作成</button>
+          </Form>
+        </div>
       </div>
     );
+  }
+
+  export async function action({ request }: ActionFunctionArgs) {
+    const formData = await request.formData();
+    return redirect(`/thread/${formData.get("body")}`);
   }
